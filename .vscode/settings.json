@@ -1,0 +1,23 @@
+{
+    "files.exclude": {
+        "**/.git": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "**/*.meta": true,
+        "**/*.unity": true,
+        "**/*.asset": true,
+        "Library/": true,
+        "Temp/": true,
+        "Logs/": true,
+        "UserSettings/": true,
+        "obj/": true,
+        "bin/": true
+    },
+    "search.exclude": {
+        "**/Library": true,
+        "**/Temp": true,
+        "**/Logs": true,
+        "**/UserSettings": true
+    },
+    "dotnet.defaultSolution": "The Slime's Warden.slnx"
+}

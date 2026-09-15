@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c20a0f493737ce4fbf3c0358e370b4c, type: 3}
+  m_Name: SlimeOutro_Final
+  m_EditorClassIdentifier: 
+  _characterName: Squishy
+  _sentences:
+  - "\xA1Mir\xE1, mir\xE1! \xA1Ah\xED est\xE1n! \xA1Llegamos!"
+  - "\xA1Sos mi s\xFAper h\xE9roe, se\xF1or Brujo! Pens\xE9 que me iba a quedar solito
+    en la oscuridad para siempre."
+  - "\xA1Mil gracias por cuidarme! \xA1Te quiero mucho, chauuu!"
