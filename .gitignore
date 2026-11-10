@@ -86,3 +86,7 @@ crashlytics-build.properties
 
 # Instaladores de packs de Asset Store
 *.unitypackage
+
+.claude/
+MEMORIA.md
+CLAUDE.md
