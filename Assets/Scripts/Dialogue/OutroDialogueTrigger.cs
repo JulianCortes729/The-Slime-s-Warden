@@ -1,17 +1,16 @@
 using UnityEngine;
-using UnityEngine.SceneManagement; //para poder cambiar de escenas
 
 public class OutroDialogueTrigger : MonoBehaviour
 {
     [Header("Configuración Narrativa")]
     [Tooltip("El libreto final donde el slime encuentra a su familia.")]
     [SerializeField] private DialogueData _outroDialogue;
-    [Tooltip("El nombre EXACTO de tu escena de fin de juego.")]
-    [SerializeField] private string _gameOverSceneName = "GameOver";
 
     [Header("Canales de Comunicación")]
     [SerializeField] private DialogueEventChannel _dialogueChannel;
     [SerializeField] private VoidEventChannel _dialogueEndedChannel;
+    [Tooltip("Fin del juego: lo escucha el GameManager, que carga la escena final. Es el mismo canal que usa la muerte.")]
+    [SerializeField] private VoidEventChannel _gameOverEventChannel;
 
     //Evita que el jugador dispare esto 2 veces si entra y sale rápido
     private bool _hasTriggered = false; 
@@ -46,8 +45,12 @@ public class OutroDialogueTrigger : MonoBehaviour
             _dialogueEndedChannel.OnRaiseEvent -= OnOutroDialogueEnded;
         }
 
-        // 4. El helicóptero de extracción (Cargamos la nueva escena)
-        SceneManager.LoadScene(_gameOverSceneName);
+        // 4. El helicóptero de extracción: pedimos la escena final al GameManager, el único que carga
+        // escenas (en segundo plano y sin cargas dobles). Sin GameManager (Play directo en SampleScene) no pasa nada.
+        if (_gameOverEventChannel != null)
+            _gameOverEventChannel.RaiseEvent();
+        else
+            Debug.LogError("[OutroDialogueTrigger] Falta asignar el canal de fin del juego (GameOverEventChannel).", this);
     }
 
     //Medida de seguridad: Si por algún motivo externo este Trigger

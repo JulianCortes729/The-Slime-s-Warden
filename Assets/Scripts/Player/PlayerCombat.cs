@@ -31,8 +31,12 @@ public class PlayerCombat : MonoBehaviour
 
     private void Update()
     {
-        if (blackboard.isTalking) return; // No podemos disparar si estamos hablando o muertos
-        if (blackboard.isDead) return;
+        if (blackboard.IsControlLocked)
+        {
+            // No podemos disparar si estamos hablando o muertos, y un disparo pulsado justo antes se descarta
+            blackboard.shootIntent = false;
+            return;
+        }
         // FIX #15: era blackboard.contBullet → renombrado a bulletCount
         if (blackboard.shootIntent && blackboard.bulletCount > 0)
             Shoot();

@@ -25,9 +25,16 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if(blackboard.isTalking) return; // No podemos movernos si estamos hablando
-
         if(blackboard.isDead) return;// No podemos movernos si estamos muertos
+
+        if(blackboard.isTalking)
+        {
+            // Quieto mientras habla: sin deslizarse con la velocidad que traía
+            // y sin un salto pulsado justo antes que salga al cerrar el diálogo
+            blackboard.jumpBufferTimer = 0f;
+            rb.velocity = new Vector2(0f, rb.velocity.y);
+            return;
+        }
 
         if(blackboard.jumpBufferTimer > 0f)
         {

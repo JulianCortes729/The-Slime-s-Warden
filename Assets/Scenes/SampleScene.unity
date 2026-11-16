@@ -98259,9 +98259,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _outroDialogue: {fileID: 11400000, guid: 36f7be1dc671a754dab1549aaa5c6717, type: 2}
-  _gameOverSceneName: SceneGameOver
   _dialogueChannel: {fileID: 11400000, guid: 8ceef3a7dc2bb2e4c9536e857aa43e9b, type: 2}
   _dialogueEndedChannel: {fileID: 11400000, guid: c6de810b1cef84248ab8bf6f8629e730, type: 2}
+  _gameOverEventChannel: {fileID: 11400000, guid: c80c366372a3c0544bdf57339016111e, type: 2}
 --- !u!1 &947854325
 GameObject:
   m_ObjectHideFlags: 0

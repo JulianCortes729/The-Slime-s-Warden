@@ -113,7 +113,7 @@ public class PlayerFootsteps : MonoBehaviour
         // 📌 GDD: sin pasos en el aire, ni muerto, ni mientras volás por un knockback.
         if (!grounded) return false;
         if (blackboard.isDead) return false;
-        if (blackboard.isKnockedBack) return false;
+        if (blackboard.knockbackTimer > 0f) return false; // aturdido por el golpe
         if (Mathf.Abs(blackboard.moveInput) < minMoveInput) return false;
         return true;
     }

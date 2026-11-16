@@ -19,7 +19,6 @@ public class PlayerBlackboard : MonoBehaviour
     public bool shootIntent;
 
     [Header("Health")]
-    public int maxLives = 3;
     public int currentLives = 3;
 
     [Header("Invulnerability")]
@@ -38,5 +37,6 @@ public class PlayerBlackboard : MonoBehaviour
     [Header("Estados Narrativos")]
     public bool isTalking = false; //Por defecto el Brujo no está hablando
 
-    public bool isKnockedBack;
+    // Mientras habla o está muerto, el Brujo no obedece al jugador: ni se mueve, ni salta, ni dispara
+    public bool IsControlLocked => isTalking || isDead;
 }
