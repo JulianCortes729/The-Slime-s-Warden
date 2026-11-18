@@ -9,8 +9,8 @@ public class OutroDialogueTrigger : MonoBehaviour
     [Header("Canales de Comunicación")]
     [SerializeField] private DialogueEventChannel _dialogueChannel;
     [SerializeField] private VoidEventChannel _dialogueEndedChannel;
-    [Tooltip("Fin del juego: lo escucha el GameManager, que carga la escena final. Es el mismo canal que usa la muerte.")]
-    [SerializeField] private VoidEventChannel _gameOverEventChannel;
+    [Tooltip("Nivel completado (LevelCompletedChannel): lo escucha el GameManager, que carga la pantalla final en su variante de victoria.")]
+    [SerializeField] private VoidEventChannel _levelCompletedChannel;
 
     //Evita que el jugador dispare esto 2 veces si entra y sale rápido
     private bool _hasTriggered = false; 
@@ -47,10 +47,10 @@ public class OutroDialogueTrigger : MonoBehaviour
 
         // 4. El helicóptero de extracción: pedimos la escena final al GameManager, el único que carga
         // escenas (en segundo plano y sin cargas dobles). Sin GameManager (Play directo en SampleScene) no pasa nada.
-        if (_gameOverEventChannel != null)
-            _gameOverEventChannel.RaiseEvent();
+        if (_levelCompletedChannel != null)
+            _levelCompletedChannel.RaiseEvent();
         else
-            Debug.LogError("[OutroDialogueTrigger] Falta asignar el canal de fin del juego (GameOverEventChannel).", this);
+            Debug.LogError("[OutroDialogueTrigger] Falta asignar el canal de nivel completado (LevelCompletedChannel).", this);
     }
 
     //Medida de seguridad: Si por algún motivo externo este Trigger

@@ -3,6 +3,7 @@ using UnityEngine;
 /// <summary>
 /// AudioSource reciclable. NO decide cuándo volver al pool — de eso se encarga
 /// el AudioManager. Este script solo sabe reproducir y reportar cuánto dura.
+/// Vive en el prefab AudioPrefab, que el AudioManager clona para su pool.
 /// </summary>
 // ⚠️ SOLID (SRP): antes esta clase reproducía Y gestionaba su propio retorno al
 // pool con una corrutina. Dos responsabilidades. Ahora solo reproduce.

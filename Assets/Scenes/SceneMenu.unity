@@ -4840,6 +4840,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _gameOverEventChannel: {fileID: 11400000, guid: c80c366372a3c0544bdf57339016111e, type: 2}
+  _levelCompletedEventChannel: {fileID: 11400000, guid: 5126a02f80fb4c479bb321dcf260f87c, type: 2}
+  _gameResult: {fileID: 11400000, guid: e72cc2b66c424a49b4942b938374f7fb, type: 2}
   _restartGameEventChannel: {fileID: 11400000, guid: 597c1853aca6b9944aa1a4835cc7d52b, type: 2}
   _returnToMenuEventChannel: {fileID: 11400000, guid: 13a132d5de4f6804c8e92b83555fab64, type: 2}
   _startGameEventChannel: {fileID: 11400000, guid: d27e3d9e677b95b499622a404ba9e16d, type: 2}
@@ -5696,6 +5698,7 @@ GameObject:
   - component: {fileID: 1290994999}
   - component: {fileID: 1290994998}
   - component: {fileID: 1290995002}
+  - component: {fileID: 1945063986}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -9814,6 +9817,18 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b94bfd4895474d54c8347cd8117539cb, type: 3}
+--- !u!114 &1945063986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1290994997}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a41d062e7e7e4ad2a746d453c54e7cc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

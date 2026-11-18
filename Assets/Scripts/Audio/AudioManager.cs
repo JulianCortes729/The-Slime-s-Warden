@@ -58,6 +58,14 @@ public class AudioManager : MonoBehaviour
         transform.parent = null; // DontDestroyOnLoad solo funciona en objetos raíz
         DontDestroyOnLoad(gameObject);
 
+        if (audioPrefab == null)
+        {
+            // Un fallo de audio no debe romper el juego: sin prefab no suenan los efectos, pero se sigue
+            // jugando. Antes, la excepción de Instantiate(null) cortaba el disparo antes de crear la bala.
+            Debug.LogError("[AudioManager] 'Audio Prefab' está vacío o su script PooledAudio no carga. " +
+                           "Los efectos de sonido quedan apagados.", this);
+        }
+
         _pool = new ObjectPool<PooledAudio>(
             createFunc: CreatePooledAudio,
             actionOnGet: OnTakeFromPool,
@@ -166,6 +174,7 @@ public class AudioManager : MonoBehaviour
     private void PlayCue(AudioCue cue, Vector3 position)
     {
         if (cue == null || !cue.IsValid) return;
+        if (audioPrefab == null) return; // ya avisado en Awake; sin prefab no hay con qué sonar
 
         PooledAudio pooled = _pool.Get();
         pooled.transform.position = position;

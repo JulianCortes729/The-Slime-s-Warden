@@ -5,7 +5,12 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    [Tooltip("Muerte del jugador (DeathChannel): se carga la pantalla final en su variante de derrota")]
     [SerializeField] private VoidEventChannel _gameOverEventChannel;
+    [Tooltip("Fin del diálogo final (LevelCompletedChannel): se carga la pantalla final en su variante de victoria")]
+    [SerializeField] private VoidEventChannel _levelCompletedEventChannel;
+    [Tooltip("Dónde se anota cómo terminó la partida; la pantalla final lo lee")]
+    [SerializeField] private GameResult _gameResult;
     [SerializeField] private VoidEventChannel _restartGameEventChannel;
     [SerializeField] private VoidEventChannel _returnToMenuEventChannel;
     [SerializeField] private VoidEventChannel _startGameEventChannel;
@@ -32,6 +37,7 @@ public class GameManager : MonoBehaviour
     private void OnEnable()
     {
         _gameOverEventChannel.OnRaiseEvent += OnGameOver;
+        if (_levelCompletedEventChannel != null) _levelCompletedEventChannel.OnRaiseEvent += OnLevelCompleted;
         _restartGameEventChannel.OnRaiseEvent += OnRestartGame;
         _returnToMenuEventChannel.OnRaiseEvent += OnReturnToMenu;
         _startGameEventChannel.OnRaiseEvent += OnStartGame;
@@ -41,6 +47,7 @@ public class GameManager : MonoBehaviour
     private void OnDisable()
     {
         _gameOverEventChannel.OnRaiseEvent -= OnGameOver;
+        if (_levelCompletedEventChannel != null) _levelCompletedEventChannel.OnRaiseEvent -= OnLevelCompleted;
         _restartGameEventChannel.OnRaiseEvent -= OnRestartGame;
         _returnToMenuEventChannel.OnRaiseEvent -= OnReturnToMenu;
         _startGameEventChannel.OnRaiseEvent -= OnStartGame;
@@ -55,7 +62,24 @@ public class GameManager : MonoBehaviour
     private void OnGameOver()
     {
         if(_isLoading) return;
+        RecordOutcome(GameOutcome.Defeat);
         StartCoroutine(LoadSceneAsynchronously(_gameOverSceneName));
+    }
+
+    private void OnLevelCompleted()
+    {
+        if(_isLoading) return;
+        RecordOutcome(GameOutcome.Victory);
+        StartCoroutine(LoadSceneAsynchronously(_gameOverSceneName));
+    }
+
+    // Se anota ANTES de cargar: la pantalla final lo lee en su Awake
+    private void RecordOutcome(GameOutcome outcome)
+    {
+        if (_gameResult != null)
+            _gameResult.Record(outcome);
+        else
+            Debug.LogError("[GameManager] Falta asignar GameResult: la pantalla final mostrará siempre la derrota.", this);
     }
 
     private void OnRestartGame()

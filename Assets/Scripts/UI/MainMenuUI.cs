@@ -13,21 +13,7 @@ public class MainMenuUI : MonoBehaviour
     [SerializeField] private GameObject _controlsButton; // recibe el foco al cerrar el panel
     [SerializeField] private GameObject _closeButton;    // recibe el foco al abrir el panel
 
-    private GameObject _lastSelected;
-
-    private void Update()
-    {
-        // Siempre hay un botón con foco: si un clic en el vacío quita la selección,
-        // se recupera la última. Así el teclado y el mando nunca se quedan sin botón activo.
-        EventSystem eventSystem = EventSystem.current;
-        if (eventSystem == null) return;
-
-        GameObject current = eventSystem.currentSelectedGameObject;
-        if (current != null && current.activeInHierarchy)
-            _lastSelected = current;
-        else if (_lastSelected != null && _lastSelected.activeInHierarchy)
-            eventSystem.SetSelectedGameObject(_lastSelected);
-    }
+    // Que siempre haya un botón con foco lo hace SelectionKeeper (en el mismo Canvas)
 
     public void OnPlayButtonClicked()
     {
