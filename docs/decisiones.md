@@ -49,3 +49,18 @@
 - Qué: si al AudioManager le falta su prefab, avisa una vez y sigue sin sonido.
 - Por qué: ciclo 03. La excepción del audio cortaba el disparo antes de crear la bala.
 - Descartado: cambiar el orden en cada tirador.
+
+### 2026-11-19 · Sonido en los botones del menú y de la pantalla final
+- Qué: MenuSounds, en el Canvas de cada pantalla, toca un «plip» al cambiar de botón y un «plop» al pulsar (juego «Gota de slime» del Free UI Click Sound Effects Pack), por SFXCueChannel y el grupo UI del mixer.
+- Por qué: ciclo 04. Confirma la navegación con teclado y la pulsación; el sonido no se corta al cambiar de escena.
+- Descartado: sonar en OnSelect de MenuButtonFeedback (sonaría al abrir la pantalla y al recuperar la selección).
+
+### 2026-11-19 · Disparos e impactos más bajos
+- Qué: los 4 cues de magia bajan de 0,85-1 a unos −27 dB en el juego (jugador 0,75-0,88, enemigo 0,41-0,48, impactos 0,45-0,52 y 0,27-0,32).
+- Por qué: ciclo 04, playtest: se oían muy fuertes. Medidos, tapaban la música por 10-20 dB; jugando, −33 y −30 dB quedaron bajos.
+- Descartado: bajar el grupo SFX del mixer (bajaría también los pasos, que ya suenan flojos).
+
+### 2026-11-19 · Del paquete de clics solo quedan los 2 sonidos usados
+- Qué: se borraron 98 wav, el mp3 de muestra, los PDF y la imagen del Free UI Click Sound Effects Pack (de 12 MB a 144 KB), antes de entrar en git.
+- Por qué: ciclo 04. Podar lo que no se usa; las referencias (guid de los .meta) no cambian.
+- Descartado: mantenerlo entero. Otro sonido se reimporta desde Package Manager > My Assets.

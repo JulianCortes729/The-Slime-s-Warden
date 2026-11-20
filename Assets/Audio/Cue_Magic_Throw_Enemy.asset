@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   clips:
   - {fileID: 8300000, guid: 74a0a32737ea48741aafc04d79bdead6, type: 3}
-  volumeRange: {x: 0.85, y: 1}
+  volumeRange: {x: 0.41, y: 0.48}
   pitchRange: {x: 0.92, y: 1.08}
   mixerGroup: {fileID: 6761011342783245542, guid: 42225fa27c33eec48b026cd70202a039, type: 2}
   spatialBlend: 0
