@@ -3,7 +3,7 @@ using UnityEngine;
 
 //Al igual que con los datos, necesitamos poder instanciar este canal
 //como un archivo físico en nuestras carpetas de Unity.
-[CreateAssetMenu(fileName = "DialogueEventChannel", menuName = "RiseWithoutSky/Events/Dialogue Channel")]
+[CreateAssetMenu(fileName = "DialogueEventChannel", menuName = "Event Channels/Dialogue Channel")]
 public class DialogueEventChannel : ScriptableObject
 {
     //Action es un delegado de C#. Es, literalmente, un "Evento".

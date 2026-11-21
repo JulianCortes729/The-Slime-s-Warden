@@ -93,7 +93,7 @@ public class PlayerFootsteps : MonoBehaviour
         // altas se te desfasa el ritmo progresivamente.
         _travelled -= stepDistance;
 
-        PlayCue(ResolveSurfaceCue());
+        PlayCue(defaultSurfaceCue);
     }
 
     private void DetectLanding(bool grounded)
@@ -116,18 +116,6 @@ public class PlayerFootsteps : MonoBehaviour
         if (blackboard.knockbackTimer > 0f) return false; // aturdido por el golpe
         if (Mathf.Abs(blackboard.moveInput) < minMoveInput) return false;
         return true;
-    }
-
-    /// <summary>
-    /// 🔌 HOOK para la opción 3.2 (detección de superficie).
-    /// Hoy devuelve siempre el mismo cue. Cuando quieras madera en las plataformas
-    /// frágiles y tierra en el tilemap, el único cambio va acá adentro: un
-    /// Physics2D.Raycast hacia abajo + TryGetComponent&lt;SurfaceTag&gt;().
-    /// Ni PlayerFootsteps ni nada más se entera del cambio.
-    /// </summary>
-    private AudioCue ResolveSurfaceCue()
-    {
-        return defaultSurfaceCue;
     }
 
     private void PlayCue(AudioCue cue)

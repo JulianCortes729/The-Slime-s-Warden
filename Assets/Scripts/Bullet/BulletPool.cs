@@ -2,10 +2,10 @@ using UnityEngine;
 using UnityEngine.Pool;
 
 /// <summary>
-/// Pool reutilizable de balas. Implementa IBulletPool para ser consumido por
-/// PlayerCombat y EnemyShooter sin que conozcan los detalles del pool interno.
+/// Pool reutilizable de balas, compartido por PlayerCombat y EnemyShooter:
+/// piden una bala con Get y ella vuelve sola al pool (Bullet.Initialize).
 /// </summary>
-public class BulletPool : MonoBehaviour, IBulletPool
+public class BulletPool : MonoBehaviour
 {
     [Header("Configuration")]
     [SerializeField] private Bullet bulletPrefab;
@@ -38,8 +38,6 @@ public class BulletPool : MonoBehaviour, IBulletPool
         bullet.Fire(direction);               // FIX #3: era bullet.Fire() pero Bullet tenía "Disparar" → no compilaba
         return bullet;
     }
-
-    public void Release(Bullet bullet) => _pool.Release(bullet);
 
     // ── Reglas del pool ───────────────────────────────────────────────────────
 

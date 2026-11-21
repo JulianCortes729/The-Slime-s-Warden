@@ -22,21 +22,14 @@ public class EnemyShooter : MonoBehaviour
     [Tooltip("La receta del sonido de disparo (Cue, no AudioClip).")]
     [SerializeField] private AudioCue shootCue;
 
-    // FIX #8/#9: antes EnemyShooter duplicaba todo el ObjectPool<Bullet> que ya existe en BulletPool.cs
-    // Ahora inyectamos la abstracción — EnemyShooter no sabe cómo funciona el pool internamente.
-    [SerializeField] private BulletPool bulletPool;   // inspector: tipo concreto para asignar en editor
-    private IBulletPool _bulletPool;                  // uso interno: tipado como interfaz (SOLID / DIP)
+    // El pool de balas compartido de la escena: EnemyShooter no conoce su interior
+    [SerializeField] private BulletPool bulletPool;
 
     private float _currentCooldown;
 
     // FIX #12: usamos buffer NonAlloc para la detección; un solo resultado es suficiente
     // 🟢 POOL: evitamos allocations en el hot-path de detección
     private readonly Collider2D[] _detectionBuffer = new Collider2D[1];
-
-    private void Awake()
-    {
-        _bulletPool = bulletPool;
-    }
 
     private void Update()
     {
@@ -78,9 +71,8 @@ public class EnemyShooter : MonoBehaviour
         if (sfxChannel != null)
             sfxChannel.RaiseEvent(shootCue, firePoint.position);
 
-        // FIX #20: antes Get() devolvía la bala pero la dirección se perdía porque
-        // OnTakeBulletFromPool no la tenía — ahora IBulletPool.Get() lo maneja todo en un paso.
-        _bulletPool.Get(firePoint.position, direction);
+        // Get posiciona, activa y dispara la bala en un solo paso
+        bulletPool.Get(firePoint.position, direction);
     }
 
     private void RotateTurret(Vector3 targetPosition)

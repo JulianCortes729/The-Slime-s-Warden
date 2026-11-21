@@ -2,7 +2,7 @@ using UnityEngine;
 
 //ScriptableObjects.
 //Le dice a Unity que agregue una opción en el menú de click derecho (Create).
-[CreateAssetMenu(fileName = "NewDialogue", menuName = "RiseWithoutSky/Dialogue Data")]
+[CreateAssetMenu(fileName = "NewDialogue", menuName = "Dialogue/Dialogue Data")]
 public class DialogueData : ScriptableObject
 {
     //Los datos reales son privados para protegerlos (Encapsulamiento).

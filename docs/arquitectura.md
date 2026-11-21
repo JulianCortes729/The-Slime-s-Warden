@@ -1,9 +1,9 @@
-<!-- Mapa del juego. Al día con el ciclo 04. Leído del código de Assets/Scripts. -->
+<!-- Mapa del juego. Al día con el ciclo 04 y la revisión del 2026-11-20. Leído del código de Assets/Scripts. -->
 # Arquitectura de The Slime's Warden
 
 ## Un frame, en orden
 1. Update: `PlayerInput` lee las acciones y rellena `PlayerBlackboard` (`moveInput`, `shootIntent`); con `IsControlLocked` (hablando o muerto) lo anula. `PlayerCombat` dispara pidiendo una bala a `BulletPool`. `DialogueUI`, `SelectionKeeper`, `MenuSounds`, `SlimeCompanion` y `AudioManager` hacen su parte.
-2. FixedUpdate: `PlayerMovement` aplica `Rigidbody2D.velocity` leyendo el blackboard; `GroundDetector`, `EnemyPatrol` y `EnemyShooter` consultan la física.
+2. FixedUpdate: `PlayerMovement` aplica `Rigidbody2D.velocity` leyendo el blackboard; `GroundDetector`, `EnemyPatrol` y `EnemyShooter` consultan la física. El orden entre `GroundDetector` y `PlayerMovement` no está fijado: tras saltar o rebotar, `groundIgnoreTimer` (0,1 s) hace que el resultado no dependa de él, y un trampolín no cuenta como suelo mientras el Brujo cae sobre él.
 3. Física: `Bullet` choca, aplica `IDamageable.TakeDamage`, lanza cues de audio y VFX por canal y vuelve a su pool.
 4. Cinemachine mueve la cámara y dispara `CameraUpdatedEvent`: `BackgroundZones` y `ZoneParallaxLayer` se actualizan ahí.
 
@@ -30,15 +30,16 @@ flowchart LR
 | Sistema | Archivos (Assets/Scripts) | Responsabilidad | Depende de | Lo usan |
 |---|---|---|---|---|
 | Jugador | Player/ `PlayerInput`, `PlayerBlackboard`, `PlayerMovement`, `PlayerCombat`, `PlayerHealth`, `PlayerVisuals`, `PlayerFootsteps`, `GroundDetector`, `PlayerDialogueListener` | Input → blackboard → física; vida y muerte | canales, `BulletPool` | Squishy, UI |
-| Squishy | Slime/ `SlimeCompanion` (en uso), `PetFollower` (sin uso) | Flota a los pies del Brujo | Transform del jugador | - |
-| Enemigos y plataformas | Enemy/ `EnemyPatrol`, `EnemyShooter`; Systems/ `HealthSystem`; Platforms/ `FragilePlatform`, `Trampoline` | Patrullar, disparar, recibir daño | `IBulletPool`, `IDamageable` | `Bullet` |
-| Balas (pool) | Bullet/ `Bullet`, `BulletPool`, `CollectibleAmmo`; Interfaces/ `IBulletPool`, `IDamageable` | Pool con `UnityEngine.Pool` | canales SFX/VFX | jugador, enemigos |
-| Audio | Audio/ `AudioManager`, `PooledAudio`, `MusicManager`, `SceneMusic`, `AudioCue`, `AudioSettingsSO`, `AudioSettingsBinder`, canales | SFX con pool; música con crossfade | cues y canales | casi todos |
+| Squishy | Slime/ `SlimeCompanion` | Flota a los pies del Brujo | Transform del jugador | - |
+| Enemigos y plataformas | Enemy/ `EnemyPatrol`, `EnemyShooter`; Systems/ `HealthSystem`; Platforms/ `FragilePlatform`, `Trampoline` | Patrullar, disparar, recibir daño | `BulletPool`, `IDamageable` | `Bullet` |
+| Balas (pool) | Bullet/ `Bullet`, `BulletPool`, `CollectibleAmmo`; Interfaces/ `IDamageable` | Pool con `UnityEngine.Pool` | canales SFX/VFX | jugador, enemigos |
+| Audio | Audio/ `AudioManager`, `PooledAudio`, `MusicManager`, `SceneMusic`, `AudioCue`, canales | SFX con pool; música con crossfade | cues y canales | casi todos |
 | VFX | VFX/ `VFXManager`, `PooledVFX`, `VFXCueChannel` | Efectos con pool por tipo | canal VFX | `Bullet` |
 | Diálogos | Dialogue/ `LevelIntroDialogue`, `OutroDialogueTrigger`; UI/ `DialogueUI`; ScriptableObjects/ `DialogueData` | Mostrar diálogos y avisar del fin | canales de diálogo | jugador |
 | Fondo por zonas | Background/ `BackgroundZones`, `ZoneParallaxLayer` | Color y pilares por zona | Cinemachine | - |
 | UI | UI/ `MainMenuUI`, `GameOverUI`, `GameOverScreen`, `SelectionKeeper`, `MenuSounds`, `LifeUI`, `MenuButtonFeedback`, `UIFloat` | Menú, pantalla final, vidas; `MenuSounds` (Canvas de SceneMenu y SceneGameOver, junto a `SelectionKeeper`) escucha la selección del EventSystem y los `onClick` | canales, `GameResult`, `SFXCueChannel` | - |
 | GameManager | Managers/ `GameManager` | Único que carga escenas; anota el resultado | canales, `GameResult` | todos por canal |
+| Diagnóstico | Diagnostics/ `FrameTimeRecorder` | Solo con `--measure` en el juego exportado: pulsa Jugar, mide 30 s y cierra | `MainMenuUI` | comando «Medir» |
 
 ## Datos y valores de ajuste
 - Canales (.asset en la raíz de Assets): `VoidEventChannel` (DeathChannel, LevelCompletedChannel, Event_*, DialogueEndedChannel), `IntEventChannel` (PlayerHealthChannel), `DialogueEventChannel`, `AudioCueChannel` (SFXCueChannel), `MusicCueChannel`, `VFXCueChannel`.
@@ -48,7 +49,7 @@ flowchart LR
 
 ## Ensamblados y pruebas
 - `Assets/Scripts/SlimesWarden.asmdef`: todo el juego; referencia Cinemachine, Unity.InputSystem, Unity.TextMeshPro y UnityEngine.UI.
-- `Assets/Tests/EditMode/SlimesWarden.Tests.EditMode.asmdef` (solo Editor): `GameResultTests`, `GameOverScreenTests`, `MenuSoundsTests` (15 pruebas).
+- `Assets/Tests/EditMode/SlimesWarden.Tests.EditMode.asmdef` (solo Editor): `GameResultTests`, `GameOverScreenTests`, `MenuSoundsTests`, `FrameTimeRecorderTests`, `PlayerJumpTests` (30 pruebas).
 
 ## Para cambiar X, toca Y
 - Un fin nuevo: `GameOutcome` en `GameResult.cs`, un `Variant` en `GameOverScreen.cs`, un canal en `GameManager.cs`.
@@ -64,7 +65,7 @@ flowchart LR
 - Data as Asset: `GameResult`, ciclo 03.
 - Instancia única + DontDestroyOnLoad: managers; el sonido del botón no se corta al cambiar de escena.
 - Double Buffering: `MusicManager`, para el crossfade.
-- Regla pura estática probada sin escena: `GameOverScreen.OutcomeToShow` (ciclo 03) y `MenuSounds.ShouldPlayMove` (ciclo 04).
+- Regla pura estática probada sin escena: `GameOverScreen.OutcomeToShow` (ciclo 03), `MenuSounds.ShouldPlayMove` (ciclo 04), `PlayerMovement.CanJump` y `GroundDetector.CountsAsGround`/`IsSolidGround` (revisión 2026-11-20).
 
 ## Listo para crecer
 - Más finales: un valor de `GameOutcome` y una `Variant`.
@@ -74,5 +75,5 @@ flowchart LR
 ## Deuda conocida
 - Managers solo en SceneMenu: Play directo en otra escena no tiene carga, muerte ni música.
 - 32 texturas sin comprimir; `onClick` del menú con `Assembly-CSharp`.
-- GDD desfasado; faltan `docs/motor.md` y `docs/rendimiento.md`; `PetFollower` sin uso.
+- GDD desfasado; falta `docs/motor.md`. Una frágil rota no vuelve (posible atasco, H2 de la revisión 2026-11-20).
 - `MenuSounds` toma los botones en `Awake` (no engancha los creados después).

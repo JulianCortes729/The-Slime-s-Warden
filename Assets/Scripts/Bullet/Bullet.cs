@@ -25,8 +25,7 @@ public class Bullet : MonoBehaviour
     [Tooltip("Qué tipo de explosión pedir al impactar.")]
     [SerializeField] private VFXType impactVFX;
 
-    // FIX #1: era IBulletPool (interfaz custom incompatible con lo que Initialize recibía)
-    // Ahora es IObjectPool<Bullet> para matchear el parámetro de Initialize
+    // El pool al que vuelve la bala («boleto de regreso»), recibido en Initialize
     private IObjectPool<Bullet> _pool;
     private Rigidbody2D _rb;
     private float _lifetimeTimer;

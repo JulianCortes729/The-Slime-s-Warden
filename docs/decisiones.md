@@ -64,3 +64,18 @@
 - Qué: se borraron 98 wav, el mp3 de muestra, los PDF y la imagen del Free UI Click Sound Effects Pack (de 12 MB a 144 KB), antes de entrar en git.
 - Por qué: ciclo 04. Podar lo que no se usa; las referencias (guid de los .meta) no cambian.
 - Descartado: mantenerlo entero. Otro sonido se reimporta desde Package Manager > My Assets.
+
+### 2026-11-20 · Medir el rendimiento en el juego exportado
+- Qué: FrameTimeRecorder mide 30 s en SampleScene con `--measure` (promedio, p95, p99 y peor frame; CPU y GPU). Primera medición: 0,46 ms de 16,6.
+- Por qué: revisión 2026-11-20. Sin números no se optimiza; el Editor falsea la medición.
+- Descartado: el Profiler del Editor (manual y mide también el Editor).
+
+### 2026-11-21 · El rebote del trampolín manda sobre el salto
+- Qué: tras saltar o rebotar, el suelo no cuenta 0,1 s (`groundIgnoreTime`), y un trampolín no es suelo mientras el Brujo cae sobre él.
+- Por qué: revisión 2026-11-20 (H1). Un salto en el buffer pisaba el rebote y un doble toque saltaba en el aire.
+- Descartado: un rebote mayor al pulsar a tiempo (diseño nuevo, habría que revisar las alturas del nivel).
+
+### 2026-11-21 · Poda del código sin uso
+- Qué: fuera IBulletPool, PetFollower, AudioSettingsBinder/SO y lo no usado de HealthSystem, BulletPool, MusicManager y PlayerFootsteps.
+- Por qué: revisión 2026-11-20 (H4). Lo que no se usa confunde sobre qué está vivo; queda en git.
+- Descartado: guardarlo para unas opciones de volumen que el juego no tiene.

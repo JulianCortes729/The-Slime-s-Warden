@@ -11,7 +11,12 @@ public class PlayerBlackboard : MonoBehaviour
 
     public float coyoteTime = 0.15f; // Tiempo durante el cual un salto es válido después de perder el contacto con el suelo
     public float coyoteTimer; // Temporizador que se resetea al perder el contacto
-    
+
+    // Tras saltar o rebotar, los pies aún rozan el suelo un paso de física: durante este tiempo no cuenta
+    // como suelo (sin esto, un salto en el buffer pisaba el rebote del trampolín y un doble toque saltaba en el aire)
+    public float groundIgnoreTime = 0.1f;
+    public float groundIgnoreTimer;
+
     public float moveInput;
 
     [Header("Combat")]

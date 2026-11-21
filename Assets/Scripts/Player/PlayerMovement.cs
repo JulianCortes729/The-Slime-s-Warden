@@ -25,6 +25,12 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        // Antes de los return: si habla justo tras un salto, el suelo vuelve a contar a su tiempo
+        if(blackboard.groundIgnoreTimer > 0f)
+        {
+            blackboard.groundIgnoreTimer -= Time.fixedDeltaTime;
+        }
+
         if(blackboard.isDead) return;// No podemos movernos si estamos muertos
 
         if(blackboard.isTalking)
@@ -76,21 +82,37 @@ public class PlayerMovement : MonoBehaviour
 
         // El intent solo se consume si el salto se ejecuta efectivamente.
         // Si el jugador presiona salto en el aire, el intent persiste hasta que aterriza.
-        if (blackboard.jumpBufferTimer > 0f && (blackboard.isGrounded || blackboard.coyoteTimer > 0f))
+        if (CanJump(blackboard.jumpBufferTimer, blackboard.isGrounded, blackboard.coyoteTimer))
         {
-            blackboard.jumpBufferTimer = 0f; // Resetea el buffer al aterrizar
-            blackboard.coyoteTimer = 0f; // Resetea el coyote timer al aterrizar
+            LeaveGround();
             rb.velocity = new Vector2(rb.velocity.x, 0f); // cancela velocidad vertical residual
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
         }
-        
+
     }
 
-
+    /// <summary>
+    /// Regla del salto: hay un salto pedido (buffer) y el Brujo está en el suelo o acaba de dejarlo (coyote time).
+    /// </summary>
+    public static bool CanJump(float jumpBufferTimer, bool isGrounded, float coyoteTimer)
+    {
+        return jumpBufferTimer > 0f && (isGrounded || coyoteTimer > 0f);
+    }
 
     public void ApplyBounce(float bounceForce)
     {
+        // El rebote manda: absorbe el salto pulsado al caer, que si no lo pisaría con un salto normal
+        LeaveGround();
         rb.velocity = new Vector2(rb.velocity.x, 0f); // cancela velocidad vertical residual
         rb.AddForce(Vector2.up * bounceForce, ForceMode2D.Impulse);
+    }
+
+    // Al despegar se gastan el salto pedido y el coyote time, y el suelo deja de contar un instante
+    private void LeaveGround()
+    {
+        blackboard.jumpBufferTimer = 0f;
+        blackboard.coyoteTimer = 0f;
+        blackboard.isGrounded = false;
+        blackboard.groundIgnoreTimer = blackboard.groundIgnoreTime;
     }
 }

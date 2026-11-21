@@ -58,12 +58,12 @@ public class FragilePlatform : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    private void Update()
+    // FixedUpdate: el temblor mueve el Rigidbody2D con MovePosition, que se aplica en el paso de física
+    private void FixedUpdate()
     {
         if (_currentState == FragilePlatformState.Shaking)
         {
-            _shakeTimer -= Time.deltaTime;
+            _shakeTimer -= Time.fixedDeltaTime;
 
             if (_shakeTimer <= 0f)
             {

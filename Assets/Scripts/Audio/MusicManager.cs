@@ -104,8 +104,6 @@ using UnityEngine.Audio;
             _fadeRoutine = StartCoroutine(CrossfadeRoutine(cue, fadeDuration));
         }
 
-        public void StopMusic(float fadeDuration) => PlayMusic(null, fadeDuration);
-
         private IEnumerator CrossfadeRoutine(AudioCue cue, float duration)
         {
             AudioSource from = _activeSource;
