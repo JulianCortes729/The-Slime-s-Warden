@@ -7,19 +7,23 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Mide el rendimiento en el juego exportado. Solo existe si el ejecutable se abre con
-/// --measure &lt;ruta del informe&gt;: pulsa Jugar en el menú, espera a que cargue el nivel,
-/// descarta unos segundos de calentamiento, graba cada frame durante 30 s, escribe el informe
-/// y cierra el juego. Sin ese argumento no se crea: el juego normal no lo nota.
+/// Diagnóstico del juego exportado. Solo existe si el ejecutable se abre con
+/// --measure &lt;ruta del informe&gt; o --capture &lt;carpeta&gt;: pulsa Jugar en el menú y mide
+/// cuánto tarda en cargar el nivel. Con --measure, descarta unos segundos de calentamiento,
+/// graba cada frame durante 30 s y escribe el informe; con --capture, guarda las capturas
+/// de LevelCapture. Después cierra el juego. Sin esos argumentos no se crea: el juego normal no lo nota.
 /// </summary>
 public class FrameTimeRecorder : MonoBehaviour
 {
     private const string MeasureArgument = "--measure";
+    private const string CaptureArgument = "--capture";
     private const string LevelScene = "SampleScene";
     private const float WarmupSeconds = 3f;   // carga de texturas, primeros sonidos, cámara asentándose
     private const float MeasureSeconds = 30f;
 
     private string _reportPath;
+    private string _captureFolder;
+    private float _loadSeconds;
     private readonly List<float> _frameMs = new List<float>(8192);
     private readonly List<float> _cpuMainMs = new List<float>(8192);
     private readonly List<float> _gpuMs = new List<float>(8192);
@@ -28,12 +32,16 @@ public class FrameTimeRecorder : MonoBehaviour
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void CreateIfRequested()
     {
-        string path = ReadArgument(System.Environment.GetCommandLineArgs(), MeasureArgument);
-        if (path == null) return;
+        string[] args = System.Environment.GetCommandLineArgs();
+        string reportPath = ReadArgument(args, MeasureArgument);
+        string captureFolder = ReadArgument(args, CaptureArgument);
+        if (reportPath == null && captureFolder == null) return;
 
-        GameObject recorder = new GameObject(nameof(FrameTimeRecorder));
-        DontDestroyOnLoad(recorder);
-        recorder.AddComponent<FrameTimeRecorder>()._reportPath = path;
+        GameObject host = new GameObject(nameof(FrameTimeRecorder));
+        DontDestroyOnLoad(host);
+        FrameTimeRecorder recorder = host.AddComponent<FrameTimeRecorder>();
+        recorder._reportPath = reportPath;
+        recorder._captureFolder = captureFolder;
     }
 
     private IEnumerator Start()
@@ -44,13 +52,29 @@ public class FrameTimeRecorder : MonoBehaviour
         Application.targetFrameRate = -1;
         Application.runInBackground = true;
 
-        // Pulsa Jugar como lo haría el jugador: el GameManager carga el nivel
+        // Pulsa Jugar como lo haría el jugador: el GameManager carga el nivel.
+        // La carga va de la pulsación al primer frame dibujado del nivel
         yield return null;
+        float pressed = Time.realtimeSinceStartup;
         MainMenuUI menu = FindAnyObjectByType<MainMenuUI>();
         if (menu != null) menu.OnPlayButtonClicked();
         while (SceneManager.GetActiveScene().name != LevelScene)
             yield return null;
+        yield return new WaitForEndOfFrame();
+        _loadSeconds = Time.realtimeSinceStartup - pressed;
 
+        if (_reportPath != null)
+            yield return MeasureFrames();
+
+        // Las capturas mueven al Brujo: van después de medir, que se hace en su posición inicial
+        if (_captureFolder != null)
+            yield return LevelCapture.Run(_captureFolder);
+
+        Application.Quit();
+    }
+
+    private IEnumerator MeasureFrames()
+    {
         yield return new WaitForSecondsRealtime(WarmupSeconds);
 
         bool interrupted = false;
@@ -84,13 +108,13 @@ public class FrameTimeRecorder : MonoBehaviour
             // Ruta mala o sin permiso: se avisa en el log del juego y se cierra igual
             Debug.LogError($"[FrameTimeRecorder] No se pudo escribir el informe en '{_reportPath}': {exception.Message}");
         }
-        Application.Quit();
     }
 
     private string BuildReport(bool interrupted)
     {
         StringBuilder report = new StringBuilder();
         report.AppendLine($"Escena: {LevelScene} · {Screen.width}x{Screen.height} · sin vsync · calidad {QualitySettings.names[QualitySettings.GetQualityLevel()]}");
+        report.AppendLine(string.Format(CultureInfo.InvariantCulture, "Carga del nivel: {0:0.000} s (de pulsar Jugar al primer frame)", _loadSeconds));
         report.AppendLine($"Frames: {_frameMs.Count} · interrumpida: {(interrupted ? "sí (cambió la escena)" : "no")}");
         report.AppendLine("Medida | promedio | p95 | p99 | peor (ms)");
         AppendRow(report, "Frame", _frameMs);

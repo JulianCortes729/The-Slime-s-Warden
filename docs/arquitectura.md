@@ -1,4 +1,4 @@
-<!-- Mapa del juego. Al día con el ciclo 04 y la revisión del 2026-11-20. Leído del código de Assets/Scripts. -->
+<!-- Mapa del juego. Al día con el ciclo 05. Leído del código de Assets/Scripts. -->
 # Arquitectura de The Slime's Warden
 
 ## Un frame, en orden
@@ -37,43 +37,41 @@ flowchart LR
 | VFX | VFX/ `VFXManager`, `PooledVFX`, `VFXCueChannel` | Efectos con pool por tipo | canal VFX | `Bullet` |
 | Diálogos | Dialogue/ `LevelIntroDialogue`, `OutroDialogueTrigger`; UI/ `DialogueUI`; ScriptableObjects/ `DialogueData` | Mostrar diálogos y avisar del fin | canales de diálogo | jugador |
 | Fondo por zonas | Background/ `BackgroundZones`, `ZoneParallaxLayer` | Color y pilares por zona | Cinemachine | - |
-| UI | UI/ `MainMenuUI`, `GameOverUI`, `GameOverScreen`, `SelectionKeeper`, `MenuSounds`, `LifeUI`, `MenuButtonFeedback`, `UIFloat` | Menú, pantalla final, vidas; `MenuSounds` (Canvas de SceneMenu y SceneGameOver, junto a `SelectionKeeper`) escucha la selección del EventSystem y los `onClick` | canales, `GameResult`, `SFXCueChannel` | - |
+| UI | UI/ `MainMenuUI`, `GameOverUI`, `GameOverScreen`, `SelectionKeeper`, `MenuSounds`, `LifeUI`, `MenuButtonFeedback`, `UIFloat` | Menú, pantalla final, vidas; `MenuSounds` escucha la selección del EventSystem y los `onClick` | canales, `GameResult`, `SFXCueChannel` | - |
 | GameManager | Managers/ `GameManager` | Único que carga escenas; anota el resultado | canales, `GameResult` | todos por canal |
-| Diagnóstico | Diagnostics/ `FrameTimeRecorder` | Solo con `--measure` en el juego exportado: pulsa Jugar, mide 30 s y cierra | `MainMenuUI` | comando «Medir» |
+| Diagnóstico | Diagnostics/ `FrameTimeRecorder`, `LevelCapture` | Solo con `--measure` o `--capture` en el exportado: pulsa Jugar, anota la carga del nivel y mide 30 s; `--capture <carpeta>`: 6 alturas, sin interfaz, tiempo congelado | `MainMenuUI`, `PlayerMovement` | comando «Medir» |
 
 ## Datos y valores de ajuste
 - Canales (.asset en la raíz de Assets): `VoidEventChannel` (DeathChannel, LevelCompletedChannel, Event_*, DialogueEndedChannel), `IntEventChannel` (PlayerHealthChannel), `DialogueEventChannel`, `AudioCueChannel` (SFXCueChannel), `MusicCueChannel`, `VFXCueChannel`.
 - Datos compartidos: `GameResult` (`GameOutcome` Defeat o Victory; `[NonSerialized]`, vuelve a Defeat al recargar scripts).
-- Audio: `Cue_UI_Move` y `Cue_UI_Press` (Assets/Audio) salen por el grupo UI del `MasterMixer`. Los grupos del mixer están a 0 dB: la mezcla de volúmenes vive en el `volumeRange` de cada `AudioCue`.
-- Ajuste por Inspector: `PlayerBlackboard`, `GameOverScreen`, `BackgroundZones`, `SlimeCompanion`, cues de audio, `MenuSounds` (canal y 2 cues).
+- Audio: los grupos del `MasterMixer` están a 0 dB; la mezcla vive en el `volumeRange` de cada `AudioCue` (`Cue_UI_*` por el grupo UI).
+- Texturas: las 15 hojas Mossy del juego van en BC7 por override de Standalone en su `.meta` (calidad 100). Una hoja nueva debe medir potencia de 2 y no guardar color blanco bajo lo transparente.
+- Ajuste por Inspector: `PlayerBlackboard`, `GameOverScreen`, `BackgroundZones`, `SlimeCompanion`, cues de audio, `MenuSounds`.
 
 ## Ensamblados y pruebas
 - `Assets/Scripts/SlimesWarden.asmdef`: todo el juego; referencia Cinemachine, Unity.InputSystem, Unity.TextMeshPro y UnityEngine.UI.
-- `Assets/Tests/EditMode/SlimesWarden.Tests.EditMode.asmdef` (solo Editor): `GameResultTests`, `GameOverScreenTests`, `MenuSoundsTests`, `FrameTimeRecorderTests`, `PlayerJumpTests` (30 pruebas).
+- `Assets/Tests/EditMode/SlimesWarden.Tests.EditMode.asmdef` (solo Editor): `GameResultTests`, `GameOverScreenTests`, `MenuSoundsTests`, `FrameTimeRecorderTests` (8), `PlayerJumpTests` (32 pruebas).
 
 ## Para cambiar X, toca Y
 - Un fin nuevo: `GameOutcome` en `GameResult.cs`, un `Variant` en `GameOverScreen.cs`, un canal en `GameManager.cs`.
-- Un sonido nuevo: crear un `AudioCue` y lanzarlo por `SFXCueChannel` (sin tocar `AudioManager`).
-- Un efecto nuevo: añadir a `VFXType` y a la lista del `VFXManager`.
+- Un sonido nuevo: crear un `AudioCue` y lanzarlo por `SFXCueChannel`; un efecto nuevo: `VFXType` y la lista del `VFXManager`.
 - Un bloqueo del jugador: `PlayerBlackboard.IsControlLocked`.
 - Una pantalla con botones: `SelectionKeeper` y `MenuSounds` en el Canvas y First Selected en el EventSystem.
+- Comparar un cambio de arte: exportar con el comando «Medir» de CLAUDE.md, abrir con `--capture <carpeta>` antes y después (6 PNG) y comparar; con `--measure` también se ve la carga.
 
 ## Patrones en uso
 - Canales de eventos ScriptableObject (Observer): desde el inicio; también `MenuSounds` (ciclo 04).
-- Blackboard: jugador, desde el inicio.
-- Pooling: balas, audio y VFX (`UnityEngine.Pool`), desde el inicio.
-- Data as Asset: `GameResult`, ciclo 03.
-- Instancia única + DontDestroyOnLoad: managers; el sonido del botón no se corta al cambiar de escena.
-- Double Buffering: `MusicManager`, para el crossfade.
-- Regla pura estática probada sin escena: `GameOverScreen.OutcomeToShow` (ciclo 03), `MenuSounds.ShouldPlayMove` (ciclo 04), `PlayerMovement.CanJump` y `GroundDetector.CountsAsGround`/`IsSolidGround` (revisión 2026-11-20).
+- Blackboard: jugador. Pooling: balas, audio y VFX (`UnityEngine.Pool`). Data as Asset: `GameResult` (ciclo 03).
+- Instancia única + DontDestroyOnLoad: managers. Double Buffering: `MusicManager`.
+- Regla pura estática probada sin escena: `GameOverScreen.OutcomeToShow` (03), `MenuSounds.ShouldPlayMove` (04), `PlayerMovement.CanJump` y `GroundDetector.CountsAsGround` (revisión 2026-11-20).
+- Herramienta que solo existe con argumento de línea de comandos: `FrameTimeRecorder` y `LevelCapture` (ciclo 05).
 
 ## Listo para crecer
-- Más finales: un valor de `GameOutcome` y una `Variant`.
-- Más pruebas: reglas puras (vidas, daño) en `Assets/Tests/EditMode`.
-- Más sonido: nuevos cues sin tocar código.
+- Más finales: un valor de `GameOutcome` y una `Variant`. Más pruebas: reglas puras. Más sonido: nuevos cues sin tocar código.
+- Más arte: comparable con `--capture`.
 
 ## Deuda conocida
-- Managers solo en SceneMenu: Play directo en otra escena no tiene carga, muerte ni música.
-- 32 texturas sin comprimir; `onClick` del menú con `Assembly-CSharp`.
-- GDD desfasado; falta `docs/motor.md`. Una frágil rota no vuelve (posible atasco, H2 de la revisión 2026-11-20).
-- `MenuSounds` toma los botones en `Awake` (no engancha los creados después).
+- Managers solo en SceneMenu: Play directo en otra escena no tiene carga, muerte ni música. `onClick` del menú con `Assembly-CSharp`.
+- Texturas no Mossy (slimes, otras) sin comprimir; 3 hojas Mossy sin uso en el repositorio.
+- GDD desfasado; falta `docs/motor.md`. Una frágil rota no vuelve (H2).
+- `MenuSounds` toma los botones en `Awake`. `LevelCapture`: espera fija de 2,5 s.

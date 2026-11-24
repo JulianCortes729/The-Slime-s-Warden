@@ -90,3 +90,5 @@ crashlytics-build.properties
 .claude/
 MEMORIA.md
 CLAUDE.md
+# Capturas de los ciclos (se regeneran con --capture; no se versionan)
+/capturas/
