@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 
 /// <summary>
-/// Herramienta de medición: los percentiles y la lectura de la línea de comandos.
+/// Herramienta de diagnóstico: percentiles, línea de comandos y capturas del nivel.
 /// </summary>
 public class FrameTimeRecorderTests
 {
@@ -32,6 +32,22 @@ public class FrameTimeRecorderTests
     {
         string[] args = { "Juego.exe", "--measure", "C:/medicion.txt" };
         Assert.AreEqual("C:/medicion.txt", FrameTimeRecorder.ReadArgument(args, "--measure"));
+    }
+
+    [Test]
+    public void Capturas_CubrenLasTresZonas()
+    {
+        // Verde (y < 1), roja (de 1 a 17) y azul (> 17): una comparación de arte debe verlas todas
+        Assert.IsTrue(System.Array.Exists(LevelCapture.Heights, y => y < 1f));
+        Assert.IsTrue(System.Array.Exists(LevelCapture.Heights, y => y >= 1f && y <= 17f));
+        Assert.IsTrue(System.Array.Exists(LevelCapture.Heights, y => y > 17f));
+    }
+
+    [Test]
+    public void NombreDeCaptura_OrdenadoYConSuAltura()
+    {
+        Assert.AreEqual("01_y-14.png", LevelCapture.FileName(0, -14f));
+        Assert.AreEqual("06_y35.png", LevelCapture.FileName(5, 35f));
     }
 
     [Test]

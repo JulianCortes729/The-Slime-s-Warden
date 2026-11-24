@@ -79,3 +79,18 @@
 - Qué: fuera IBulletPool, PetFollower, AudioSettingsBinder/SO y lo no usado de HealthSystem, BulletPool, MusicManager y PlayerFootsteps.
 - Por qué: revisión 2026-11-20 (H4). Lo que no se usa confunde sobre qué está vivo; queda en git.
 - Descartado: guardarlo para unas opciones de volumen que el juego no tiene.
+
+### 2026-11-23 · Hojas del tileset Mossy en BC7
+- Qué: las 15 hojas Mossy del juego, en BC7 de calidad máxima por override de Standalone (mismo tope de tamaño). Exportación de 632 a 347,5 MB; carga de 0,26 a 0,17 s.
+- Por qué: ciclo 05 (revisión 2026-11-20). Eran el 61 % de la exportación; en las capturas antes/después no se nota.
+- Descartado: comprimir en Default (afectaría a WebGL) y la calidad normal (dejaba una sombra tenue en los bordes).
+
+### 2026-11-23 · Hojas en potencia de 2 y sin color oculto blanco
+- Qué: las 2 hojas de tiles (3584) y las 3 Hanging Plants (2948 de alto) se rellenan con margen transparente arriba y a la derecha hasta 4096; en las 6 verdes, el color bajo alfa 0 pasa a negro.
+- Por qué: ciclo 05. Unity no comprime en BC7 lo que no es potencia de 2, y el blanco oculto dejaba sombra bajo las plataformas verdes. Lo visible no cambia (verificado píxel a píxel).
+- Descartado: dejarlas sin comprimir (≈470 MB) y quitarles los mipmaps (parpadeo de los tiles).
+
+### 2026-11-23 · Capturas automáticas para cambios de arte
+- Qué: `--capture <carpeta>` en el juego exportado guarda 6 capturas a alturas fijas, sin interfaz y con el tiempo congelado; el medidor anota también la carga del nivel.
+- Por qué: ciclo 05. Comparar antes/después con la misma vista, como la ve el jugador.
+- Descartado: mirarlo a ojo en el Editor.
