@@ -94,3 +94,13 @@
 - Qué: `--capture <carpeta>` en el juego exportado guarda 6 capturas a alturas fijas, sin interfaz y con el tiempo congelado; el medidor anota también la carga del nivel.
 - Por qué: ciclo 05. Comparar antes/después con la misma vista, como la ve el jugador.
 - Descartado: mirarlo a ojo en el Editor.
+
+### 2026-11-25 · Recoger munición se ve y se oye
+- Qué: al tocarlo el Brujo, el coleccionable pide por canal el destello vfx_AmmoPickup (vfx_Heal_02 en cian, con pool) y Cue_Pickup_Ammo (3 variantes Spark de Electrified SFX Library); suma su munición una sola vez.
+- Por qué: ciclo 06; en el playtest el destello y el sonido «gustan bastante», sin bugs.
+- Descartado: implosión azul, sonidos derivados del proyecto y de Kenney (no gustaron) y un contador de munición (fuera de alcance).
+
+### 2026-11-25 · Packs de sonido: solo entra lo que se usa
+- Qué: de un pack importado se quedan los clips elegidos y su licencia; el resto sale de Assets (Electrified: 1,2 GB a la papelera, quedan 0,9 MB). Basta una licencia libre con su procedencia anotada; no hace falta CC0.
+- Por qué: ciclo 06. Los WAV van por Git LFS: el repositorio crecería 1,2 GB por 3 sonidos.
+- Descartado: dejar el pack entero (la exportación no crece, pero el repositorio sí).

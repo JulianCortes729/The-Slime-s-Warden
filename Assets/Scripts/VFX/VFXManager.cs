@@ -8,7 +8,8 @@ using UnityEngine.Pool;
 public enum VFXType
 {
     PlayerHit,
-    EnemyHit
+    EnemyHit,
+    AmmoPickup   // al final: Unity guarda el enum como número y los tipos ya asignados no cambian
 }
 
 [Serializable]

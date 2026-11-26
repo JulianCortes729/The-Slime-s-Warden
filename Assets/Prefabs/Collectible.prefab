@@ -82,6 +82,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ammoAmount: 2
+  sfxChannel: {fileID: 11400000, guid: 846087d611fa32145a90472d1cda5cc3, type: 2}
+  pickupCue: {fileID: 11400000, guid: b4fd2da2faf34237b864681edea4a099, type: 2}
+  vfxChannel: {fileID: 11400000, guid: 88f82333690eb2b4fbe38bc60f6db3df, type: 2}
+  pickupVFX: 2
 --- !u!1001 &4198097657956538805
 PrefabInstance:
   m_ObjectHideFlags: 0
