@@ -9,3 +9,4 @@
 | 2026-11-20 | 04 | SampleScene (inicio) | — | 0,46 | 0,56 | 0,67 | 1,61 | 632 | Primera medición. CPU hilo principal 0,45 · GPU 0,16. 551 MB de texturas. |
 | 2026-11-23 | 05 | SampleScene (inicio) | 0,259 | 0,53 | 0,66 | 0,75 | 1,66 | 632 | Antes de comprimir (con el medidor nuevo). |
 | 2026-11-23 | 05 | SampleScene (inicio) | 0,168 | 0,53 | 0,66 | 0,76 | 3,03 | 347,5 | Hojas Mossy en BC7: texturas de 551 a 266 MB. Un pico aislado de 25 ms en una de las 3 ejecuciones. |
+| 2026-11-25 | 06 | SampleScene (inicio) | 0,174 | 0,62 | 0,75 | 0,84 | 2,71 | 353,0 | Destello y sonido de recogida (no se recoge al medir). +5,3 MB: Circle01_v1.png del destello, sin comprimir. Promedio +17 % y p95 +14 % frente al 05, bajo el umbral del 20 %; nada del ciclo corre por frame con el jugador quieto (inferido: variación del equipo). GPU sin dato válido en 2 de 3 corridas. |

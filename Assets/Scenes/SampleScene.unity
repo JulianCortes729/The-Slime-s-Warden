@@ -100430,6 +100430,8 @@ MonoBehaviour:
     VFXType: 0
   - prefab: {fileID: 6935832430191704188, guid: e822c57d774bf124881db73c97175db8, type: 3}
     VFXType: 1
+  - prefab: {fileID: 8700035473269227422, guid: 5b43e08067f84dbda42e5f37ccdab17d, type: 3}
+    VFXType: 2
 --- !u!4 &1361592958
 Transform:
   m_ObjectHideFlags: 0
